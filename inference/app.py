@@ -10,17 +10,16 @@ db = AtlasClient(altas_uri=os.getenv('MOGO_URL'), dbname="appName")
 
 
 app = Flask(__name__)
-CORS(app, origins="*")
+CORS(app, origins="https://10.206.61.53:3000")
 
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
-    print("here")
     # Call your model her
     if 'image' not in data:
         return jsonify({'error': 'no image found'})
-    print(data['image'])
-    infer = infer_image(image_array=[data['image']])
+    
+    infer = infer_image(image_url=[data['image']])
     return jsonify({'result': infer })
 
 

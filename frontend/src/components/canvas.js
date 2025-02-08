@@ -48,7 +48,7 @@ const Canvas = ({ videoRef }) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ image }),
+      body: JSON.stringify({ image: image }),
     })
       .then((res) => res.json())
       .then((data) => {
