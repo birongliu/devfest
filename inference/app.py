@@ -1,18 +1,68 @@
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-from inference import inference
+from inference import infer_image
+from database import AtlasClient
+from flask_cors import CORS
+import os
 load_dotenv()
 
+db = AtlasClient(altas_uri=os.getenv('MOGO_URL'), dbname="appName")
+
+
 app = Flask(__name__)
+CORS(app, origins="*")
 
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
-    # Call your model here
-    print(data)
-    inference.infer_image(image_array=data)
-    return jsonify({'result': 'success'})
+    print("here")
+    # Call your model her
+    if 'image' not in data:
+        return jsonify({'error': 'no image found'})
+    print(data['image'])
+    infer = infer_image(image_array=[data['image']])
+    return jsonify({'result': infer })
 
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+        app.run(port=5000, host="0.0.0.0", debug=True, ssl_context=('./ssl-certficates/localhost.pem', './ssl-certficates/localhost-key.pem'))
+
+
+"""
+{
+    image: "base64 encoded image"
+    userInfo {
+        height: 5'10"
+        weight: 150 lbs
+        type: "lose weight" | "gain weight" | "maintain weight"
+
+    
+        generate a plan for the user based on the type of weight loss they want to achieve
+        plan: {
+            goal: "lose weight"         
+        }
+    
+    }
+
+
+        
+    if 'userInfo' not in data:
+        return jsonify({'error': 'no userInfo found'})
+    
+    if 'height' not in data['userInfo']:
+        return jsonify({'error': 'no height found'})
+    
+    if 'weight' not in data['userInfo']:
+        return jsonify({'error': 'no weight found'})
+    
+    if 'type' not in data['userInfo']:
+        return jsonify({'error': 'no type found'})
+    
+    if 'lose weight' not in data['userInfo']['type'] and 'gain weight' not in data['userInfo']['type'] and 'maintain weight' not in data['userInfo']['type']:
+        return jsonify({'error': 'invalid type'})
+    
+
+
+}
+
+"""

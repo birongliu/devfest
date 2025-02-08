@@ -8,7 +8,7 @@ const Canvas = ({ videoRef }) => {
     const canvas = canvasRef.current;
     const base64Images = canvas.toDataURL("image/jpeg");
     setBase64Image((prev) => [...prev, base64Images]);
-    return base64Image;
+    return base64Images;
   };
   const takePicture = () => {
     const canvas = canvasRef.current;
@@ -41,15 +41,36 @@ const Canvas = ({ videoRef }) => {
       });
   }
 
+  function makeInference(image) {
+    console.log(image)
+    fetch("https://10.206.61.53:5000/predict", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ image }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log("???");
+        console.log(err);
+      });
+  }
+
   return (
     <div>
       <canvas hidden ref={canvasRef} width="640" height="480" />
       <button onClick={() => {
+        console.log("clicked");
         takePicture();
-        convertCanvasToBase64();
+        makeInference(convertCanvasToBase64());
       }}>Take Picture</button>
       <button onClick={openCamera}>Open Camera</button>
       <button onClick={closeCamera}>Close Camera</button>
+      {console.log(base64Image)}
       {base64Image.map((image, index) => (
         <img key={index} src={image} alt="captured" />
       ))}
@@ -58,3 +79,4 @@ const Canvas = ({ videoRef }) => {
 };
 
 export default Canvas;
+
