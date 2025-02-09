@@ -35,6 +35,7 @@ user = {
 }
 
 def generate_plan(user: dict, food: dict) -> dict:    
+    return (analyze_eating_habits(user=user, food=food).get("feedback"))
     # Calculate metrics
     # print("user", food)
     # height_parts = user['height']
@@ -118,3 +119,61 @@ def generate_plan(user: dict, food: dict) -> dict:
     - Sunflower seed butter (180 kcal)
     - Pumpkin seed butter (180 kcal)
     Please check all food labels carefully and consult with your allergist."""
+
+
+
+from groq import Groq
+from datetime import datetime
+
+def analyze_eating_habits(user: dict, food: dict, food_history: list = None) -> dict:
+    groq = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    
+    prompt = f"""As a nutritionist, analyze this person's food choice and provide guidance:
+
+User Profile:
+- Height: {user.get('height', 'unknown')}
+- Weight: {user.get('weight', 'unknown')}
+- Goal: {user.get('type', 'unknown')}
+- Allergies: Peanuts
+
+Current Food:
+- Name: {food.get('food_name', 'unknown')}
+- Calories: {food.get('calories', 0)} kcal
+
+Previous meals today (if any):
+{[f"- {meal['food_name']} ({meal['calories']} kcal)" for meal in (food_history or [])]}\n
+
+Provide feedback in this format:
+1. Food Choice Assessment
+2. Goal Alignment
+3. Safety Concerns (if any)
+4. Recommendations
+"""
+
+    try:
+        response = groq.chat.completions.create(
+            messages=[{
+                "role": "system",
+                "content": "You are a compassionate nutritionist helping people make healthy food choices. Keep it simple and informative."
+            }, {
+                "role": "user",
+                "content": prompt
+            }],
+            model="mixtral-8x7b-32768",
+            temperature=0.7,
+            max_tokens=500,
+        )
+
+        return {
+            "feedback": response.choices[0].message.content,
+            "timestamp": datetime.now().isoformat(),
+            "status": "success"
+        }
+
+    except Exception as e:
+        print(f"Error generating feedback: {str(e)}")
+        return {
+            "feedback": "Unable to generate feedback at this time.",
+            "error": str(e),
+            "status": "error"
+        }
