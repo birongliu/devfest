@@ -1,5 +1,8 @@
 # NutriVoice: "See with AI, Eat with Confidence"
 
+![screenshot](https://github.com/user-attachments/assets/c20a1026-e9e8-4988-bef3-ed4dfc1c8726)
+
+
 ## Inspiration  
 
 The inspiration for NutriVoice stemmed from a crucial question:  
@@ -49,17 +52,12 @@ Follow these steps to set up and run the project locally.
 
 ---
 
+
 ## Tech Stack  
 
 NutriVoice integrates cutting-edge AI technologies to ensure seamless and accurate nutrition tracking:  
   
-- **Groq’s Whisper API** for real-time speech-to-text processing.
-- **Groq’s Vision API**  for food recognition and calorie estimation.
-- **OpenAI’s Vision API** for food recognition and calorie estimation.
-- **LLM on Groq** for summarizing the food information.
-- **MongoDB database** to cross-reference food data and provide accurate calorie values.  
-- **React.js & JavaScript** to create an easily accessible UI.
-- **Python & Flask backend** to process user data and integrate AI models.
+![Arch-NutriVoice](https://github.com/user-attachments/assets/9d226556-1610-49ce-9a43-8a7c575aa1b3)
 
 The app allows users to:  
 - **Set personal dietary goals** based on weight, height, and timeframe.  
