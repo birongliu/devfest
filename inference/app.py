@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-from inference import infer_image
+from inference import infer_image, generate_plan
 from database import AtlasClient
 from flask_cors import CORS
 import os
@@ -12,6 +12,22 @@ db = AtlasClient(altas_uri=os.getenv('MOGO_URL'), dbname="devfest")
 app = Flask(__name__)
 CORS(app, origins="https://10.206.61.53:3000")
 
+user = {
+    "height": 161,
+    "weight": 53,
+    "type": "lose weight",
+    "gender": "female",
+    "allegy": "peanut"
+}
+
+# {
+#     "height": 180,
+#     "weight": 75,
+#     "type": "gain weight",
+#     "allegy": "peanut"
+# }
+
+
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
@@ -21,8 +37,7 @@ def predict():
     
     infer = infer_image(image_url=data['image'])
     image = get_image(food_name=infer)
-    print(infer, image)
-    return jsonify({'result': image })
+    return jsonify({'result': generate_plan(user=user, food=image) })
 
 def get_image(food_name: str):
     try:
