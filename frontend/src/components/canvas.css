@@ -1,33 +1,36 @@
 :root {
-  --background-dark: #1a1a1a;
-  --card-bg: #2d2d2d;
-  --text-primary: #ffffff;
+  --background-dark: #44633c;
+  --card-bg: #243a06;
+  --text-primary: #f5f9f7;
   --text-secondary: #b3b3b3;
-  --accent-color: #4CAF50;
+  --accent-color: #0a4e0c;
   --border-radius: 12px;
 }
 
 .buttons {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 12px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
 }
 
 .buttons button {
-    background: var(--card-bg);
-    color: var(--text-primary);
-    border: 1px solid var(--accent-color);
-    padding: 10px 20px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: all 0.3s ease;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--accent-color);
+  padding: 10px 20px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .buttons button:hover {
-    background: var(--accent-color);
-    transform: translateY(-2px);
+  background: var(--accent-color);
+  transform: translateY(-2px);
 }
 
 .nutrition-plan {
@@ -47,7 +50,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.summary-section, .nutrition-section {
+.summary-section,
+.nutrition-section {
   margin-bottom: 24px;
 }
 
@@ -87,11 +91,13 @@ h3 {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.meal-timing, .recommendations {
+.meal-timing,
+.recommendations {
   margin-top: 16px;
 }
 
-.meal-timing p, .recommendations p {
+.meal-timing p,
+.recommendations p {
   margin: 8px 0;
   padding: 12px;
   background: rgba(255, 255, 255, 0.05);
@@ -100,13 +106,13 @@ h3 {
   transition: all 0.3s ease;
 }
 
-.meal-timing p:hover, .recommendations p:hover {
+.meal-timing p:hover,
+.recommendations p:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: translateX(4px);
 }
 
 .calories {
-  font-size: 1.4rem;
   color: var(--accent-color);
   font-weight: 600;
   padding: 16px;
@@ -132,4 +138,12 @@ h3 {
 html {
   scroll-behavior: smooth;
   background: var(--background-dark);
+}
+
+/* Disable any mirroring of the video feed */
+video {
+  transform: none !important; /* Ensure the video feed is not mirrored */
+  width: 100%; /* Full width */
+  height: 270px; /* Set to a fixed height, or adjust to your liking */
+  object-fit: cover; /* To avoid distortion */
 }

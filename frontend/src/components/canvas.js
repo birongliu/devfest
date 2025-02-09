@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./canvas.css";
 
-
 const Canvas = ({ videoRef }) => {
   const canvasRef = useRef(null);
   const [base64Image, setBase64Image] = useState([]);
@@ -16,6 +15,10 @@ const Canvas = ({ videoRef }) => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
     if (videoRef.current && videoRef.current.readyState === 4) {
+      // Clear the canvas before drawing
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw the video on the canvas without mirroring
       context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
     }
   };
@@ -26,13 +29,13 @@ const Canvas = ({ videoRef }) => {
     tracks.forEach((track) => {
       track.stop();
     });
-  }
+  };
 
   const openCamera = () => {
     navigator.mediaDevices
       .getUserMedia({
         video: {
-          facingMode: "environment"
+          facingMode: { exact: "environment" },
         },
       })
       .then((stream) => {
@@ -41,18 +44,18 @@ const Canvas = ({ videoRef }) => {
       .catch((err) => {
         // alert("Please allow camera access");
       });
-  }
+  };
 
   async function makeInference(image) {
     setResult(null);
-    console.log(image)
+    console.log(image);
     const f = await fetch("https://10.206.61.53:5000/predict", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ image: image }),
-    })
+    });
     const data = await f.json();
     console.log(data);
     setResult(data.result);
@@ -77,14 +80,14 @@ const Canvas = ({ videoRef }) => {
       </div>
       {result !== null && (
         <div className="nutrition-plan">
-          {
-            result && <>
-              <div className="summary-section">        
+          {result && (
+            <>
+              <div className="summary-section">
                 <h2>Summary</h2>
                 <p>{result}</p>
               </div>
             </>
-          }
+          )}
         </div>
       )}
     </div>
@@ -92,4 +95,3 @@ const Canvas = ({ videoRef }) => {
 };
 
 export default Canvas;
-

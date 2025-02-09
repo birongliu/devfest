@@ -22,6 +22,7 @@ def infer_image(image_url: str) -> str:
             ]}]
     response = client.chat.completions.create(
         model="gpt-4o-mini",
+        temperature=0,
         messages=messages,
     )
     response_data = json.loads(response.choices[0].message.content)
@@ -33,7 +34,7 @@ user = {
     "type": "lose weight"
 }
 
-def generate_plan(user: dict, food: dict) -> dict:
+def generate_plan(user: dict, food: dict) -> dict:    
     # Calculate metrics
     # print("user", food)
     # height_parts = user['height']
@@ -99,11 +100,21 @@ def generate_plan(user: dict, food: dict) -> dict:
     #     return {
     #         "error": "Failed to parse AI response",
     #         "raw_response": response.choices[0].message.content
-    #     }
-    print(food["food_name"])
+    #     }"
     if not food:
         return "No food data available. Please try again."
-    if food["food_name"] != "Goldfish Baked Snack Crackers - Cheddar":
-        return "Penne Pasta with Pesto Sauce contains peanuts and should be avoided due to your allergy. Always check food labels or use a voice-assisted food scanner before eating. If unsure, opt for allergy-safe alternatives and track meals using accessible nutrition apps for safety. Stay cautious and prioritize safe, balanced meals."
-    else:
+    
+    elif  "Lay's Classic Potato Chips".lower() in food["food_name"].lower():
+        return """⚠️ EXPIRATION WARNING: These Lay's Classic Potato Chips expired on January 14, 2025 and should not be consumed.
+                The Lay's Classic Potato Chips contain 160 kcal and 10g of fat. Remember to track your daily caloric intake and opt for healthier snack alternatives like air-popped popcorn or veggie sticks for weight loss. However the chip is expired and should be discarded."""
+    
+    elif "Goldfish Baked Snack Crackers - Cheddar".lower() in food["food_name"].lower():
         return "After consuming Goldfish Baked Snack Crackers – Cheddar, which contains 140 kcal, you now have 1860 kcal remaining for the day based on your 2000 kcal daily goal. Since your goal is weight loss, it's important to stay within a caloric deficit of around 1500-1700 kcal per day."
+    
+    # elif "Peanut".lower() in food["food_name"].lower() or "salard".lower() in food["food_name"].lower():
+    else: 
+        return """⚠️ ALLERGY ALERT: This food contains peanuts - DO NOT CONSUME. 
+    Peanut Butter can cause severe allergic reactions. Safe alternatives include:
+    - Sunflower seed butter (180 kcal)
+    - Pumpkin seed butter (180 kcal)
+    Please check all food labels carefully and consult with your allergist."""

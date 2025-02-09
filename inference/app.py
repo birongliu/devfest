@@ -36,6 +36,7 @@ def predict():
         return jsonify({'error': 'no image found'})
     
     infer = infer_image(image_url=data['image'])
+    print("infer", infer)
     image = get_image(food_name=infer)
     return jsonify({'result': generate_plan(user=user, food=image) })
 
@@ -46,8 +47,14 @@ def get_image(food_name: str):
         if not food_name:
             return None
             
-        result = image.find_one({"food_name": f"{food_name}"})
-        
+        # result = image.find_one({"food_name": {"$regex":f".*{food_name}.*", "$options": "i"}})
+        result = image.find_one({
+            "food_name": {
+                "$regex": f"{food_name.lower()}",  # Match anywhere in the string
+                "$options": "i"    # Case-insensitive
+            }
+        })
+
         if result:
             # Convert ObjectId to string for JSON serialization
             print("result", result)
