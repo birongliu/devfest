@@ -44,6 +44,7 @@ const Canvas = ({ videoRef }) => {
   }
 
   async function makeInference(image) {
+    setResult(null);
     console.log(image)
     const f = await fetch("https://10.206.61.53:5000/predict", {
       method: "POST",
@@ -78,45 +79,9 @@ const Canvas = ({ videoRef }) => {
         <div className="nutrition-plan">
           {
             result && <>
-              <div className="summary-section">
-                <h2>Current Status</h2>
-                <div className="stats">
-                  <p>BMI: {result.summary.current_stats.BMI}</p>
-                  <p>
-                    Health Status: {result.summary.current_stats.health_status}
-                  </p>
-                </div>
-                <p className="goal">{result.summary.goal_analysis}</p>
-                <p className="timeframe">{result.summary.timeframe}</p>
-              </div>
-              <div className="nutrition-section">
-                <h2>Nutrition Plan</h2>
-                <p className="calories">
-                  Daily Calories: {result.nutrition_plan.daily_calories}
-                </p>
-
-                <div className="macros">
-                  <h3>Macronutrients</h3>
-                  <p>Protein: {result.nutrition_plan.macros.protein}g</p>
-                  <p>Carbs: {result.nutrition_plan.macros.carbs}g</p>
-                  <p>Fats: {result.nutrition_plan.macros.fats}g</p>
-                </div>
-
-                <div className="meal-timing">
-                  <h3>Meal Timing</h3>
-                  {result.nutrition_plan.meal_timing.map((meal, index) => (
-                    <p key={index}>{meal}</p>
-                  ))}
-                </div>
-
-                <div className="recommendations">
-                  <h3>Food Recommendations</h3>
-                  {result.nutrition_plan.food_recommendations.map(
-                    (rec, index) => (
-                      <p key={index}>{rec}</p>
-                    )
-                  )}
-                </div>
+              <div className="summary-section">        
+                <h2>Summary</h2>
+                <p>{result}</p>
               </div>
             </>
           }

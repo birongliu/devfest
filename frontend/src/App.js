@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import "./App.css";
 import Canvas from "./components/canvas";
+import ChatBox from "./components/chat";
 
 function App() {
   const [video, setVideo] = React.useState(null);
@@ -34,6 +35,7 @@ function App() {
   return (
     <div className="App">
       <div className="App-header">
+        <ChatBox />
         {video !== null && (
           <video autoPlay controls={false} playsInline ref={videoRef} />
         )}
