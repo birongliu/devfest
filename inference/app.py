@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-from inference import infer_image, generate_plan
+from inference import infer_image
 from database import AtlasClient
 from flask_cors import CORS
 import os
@@ -31,6 +31,8 @@ user = {
 
 import os
 from werkzeug.utils import secure_filename
+from pydantic import BaseModel
+
 
 @app.route('/speech-to-text', methods=['POST'])
 def speech_to_text():
@@ -53,7 +55,6 @@ def speech_to_text():
         # Save file temporarily
         temp_path = os.path.join(temp_dir, secure_filename(audio_file.filename))
         audio_file.save(temp_path)
-        
         print(f"Audio saved to: {temp_path}")
         groq = Groq(api_key=os.getenv("GROQ_API_KEY"))
         try:
@@ -62,7 +63,7 @@ def speech_to_text():
             file=(audio_file.filename, audio_file),
                 model="whisper-large-v3-turbo",
                 temperature=1,
-                response_format="json"  # Optional
+                response_format='json'  # Optional
             )
             transcription = audio  # Replace with actual processing
             print("transcription", transcription)
@@ -98,7 +99,7 @@ def predict():
     infer = infer_image(image_url=data['image'])
     print("infer", infer)
     image = get_image(food_name=infer)
-    return jsonify({'result': generate_plan(user=user, food=image) })
+    return jsonify({'result': generate_summary(user=user, food=image) })
 
 def get_image(food_name: str):
     try:

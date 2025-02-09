@@ -183,9 +183,9 @@ const ChatBox = () => {
           <div>Welcome to NutriVoice!</div>
         </div>
         <div style={descriptionStyle}>
-          {/* Hold the record button to share your name, goal, target time, weight,
-          and height. After recording, click 'Send,' scroll, select 'Take
-          Photo,' and point your camera at your food. */}
+          Hold the record button to share your name, goal, target time, weight,
+          and height. After recording, scroll, select 'Take
+          Photo' and point your camera at your food.
         </div>
       </div>
 
