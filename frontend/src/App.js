@@ -24,6 +24,17 @@ function App() {
       });
   };
 
+  const initalizeVoice = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      return mediaRecorder;
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+      return null;
+    }
+  }
+
   const closeCamera = () => {
     if (video) {
       video.getTracks().forEach((track) => track.stop());
@@ -35,6 +46,7 @@ function App() {
   useEffect(() => {
     if (video === null && !isCameraActive) {
       initalizeCamera();
+      initalizeVoice();
     } else if (videoRef.current) {
       videoRef.current.srcObject = video;
     }
