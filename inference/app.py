@@ -6,7 +6,7 @@ from flask_cors import CORS
 import os
 load_dotenv()
 
-db = AtlasClient(altas_uri=os.getenv('MOGO_URL'), dbname="appName")
+db = AtlasClient(altas_uri=os.getenv('MOGO_URL'), dbname="devfest")
 
 
 app = Flask(__name__)
@@ -19,10 +19,32 @@ def predict():
     if 'image' not in data:
         return jsonify({'error': 'no image found'})
     
-    infer = infer_image(image_url=[data['image']])
-    return jsonify({'result': infer })
+    infer = infer_image(image_url=data['image'])
+    image = get_image(food_name=infer)
+    print(infer, image)
+    return jsonify({'result': image })
 
+def get_image(food_name: str):
+    try:
+        image = db.get_collection("userinfo")
+        
+        if not food_name:
+            return None
+            
+        result = image.find_one({"food_name": f"{food_name}"})
+        
+        if result:
+            # Convert ObjectId to string for JSON serialization
+            print("result", result)
+            result['_id'] = str(result['_id'])
+            return result
+        else:
+            return None
 
+            
+    except Exception as e:
+        return  None
+    
 if __name__ == '__main__':
         app.run(port=5000, host="0.0.0.0", debug=True, ssl_context=('./ssl-certficates/localhost.pem', './ssl-certficates/localhost-key.pem'))
 
@@ -65,3 +87,6 @@ if __name__ == '__main__':
 }
 
 """
+
+
+

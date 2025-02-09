@@ -41,32 +41,27 @@ const Canvas = ({ videoRef }) => {
       });
   }
 
-  function makeInference(image) {
+  async function makeInference(image) {
     console.log(image)
-    fetch("https://10.206.61.53:5000/predict", {
+    const f = await fetch("https://10.206.61.53:5000/predict", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ image: image }),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((err) => {
-        console.log("???");
-        console.log(err);
-      });
+    const data = await f.json();
+    console.log(data);
+    return data;
   }
 
   return (
     <div>
       <canvas hidden ref={canvasRef} width="640" height="480" />
-      <button onClick={() => {
+      <button onClick={async () => {
         console.log("clicked");
         takePicture();
-        makeInference(convertCanvasToBase64());
+        await makeInference(convertCanvasToBase64());
       }}>Take Picture</button>
       <button onClick={openCamera}>Open Camera</button>
       <button onClick={closeCamera}>Close Camera</button>

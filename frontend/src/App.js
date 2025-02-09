@@ -35,7 +35,7 @@ function App() {
     <div className="App">
       <div className="App-header">
         {video !== null && (
-          <video autoPlay playsInline ref={videoRef} />
+          <video autoPlay controls={false} playsInline ref={videoRef} />
         )}
         {video !== null && <Canvas videoRef={videoRef} />}
       </div>

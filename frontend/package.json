@@ -7,8 +7,7 @@
     "cra-template-pwa": "2.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-scripts": "5.0.1",
-    "tailwindcss": "^4.0.4"
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "HTTPS=true SSL_CRT_FILE=./ssl-certificates/localhost+2.pem SSL_KEY_FILE=./ssl-certificates/localhost+2-key.pem react-scripts start",
@@ -35,6 +34,9 @@
     ]
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^4.0.5",
     "web-vitals": "^4.2.4"
   }
 }
