@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import "./canvas.css";
 
 const Canvas = ({ videoRef }) => {

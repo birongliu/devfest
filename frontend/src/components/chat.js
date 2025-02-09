@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import logo from "./u.png"; // Import the logo image
 
 const ChatBox = () => {
@@ -83,49 +83,91 @@ const ChatBox = () => {
     ...buttonStyle,
     backgroundColor: isRecording ? "#e53e3e" : "#23471b",
   };
-
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
   const sendButtonStyle = {
     ...buttonStyle,
     backgroundColor: isSending ? "#a0aec0" : "#38a169",
   };
+ const startRecording = async () => {
+   try {
+     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+     const mediaRecorder = new MediaRecorder(stream);
+
+     mediaRecorder.ondataavailable = (event) => {
+       if (event.data.size > 0) {
+         audioChunksRef.current.push(event.data);
+       }
+     };
+
+     mediaRecorder.onstop = () => {
+       const audioBlob = new Blob(audioChunksRef.current, {
+         type: "audio/wav",
+       });
+       audioChunksRef.current = []; // Clear recorded data
+       sendToBackend(audioBlob);
+     };
+
+     mediaRecorderRef.current = mediaRecorder;
+     mediaRecorder.start();
+     setIsRecording(true);
+   } catch (error) {
+     console.error("Error accessing microphone:", error);
+   }
+ };
+   const sendToBackend = async (blob) => {
+     const formData = new FormData();
+     formData.append("audio", blob, "audio.wav");
+
+     try {
+       const response = await fetch(
+         "https://10.206.61.53:5000/speech-to-text",
+         {
+           method: "POST",
+           body: formData,
+         }
+       );
+       const data = await response.json();
+       console.log("Transcription:", data.transcription);
+       setTranscription(data.transcription);
+     } catch (error) {
+       console.error("Error sending audio:", error);
+     }
+   };
+     const stopRecording = () => {
+       if (mediaRecorderRef.current) {
+         mediaRecorderRef.current.stop();
+         setIsRecording(false);
+       }
+     };
 
   // When the user presses and holds the microphone button.
-  const handleMicMouseDown = () => {
+  const handleMicMouseDown = (r) => {
+    r.preventDefault();
     setIsRecording(true);
     setShowSendButton(false); // Hide the send button (if visible)
     setTranscription("Recording...");
+    startRecording();
   };
 
   // When the user releases the microphone button.
-  const handleMicMouseUp = () => {
+  const handleMicMouseUp = (r) => {
+    r.preventDefault()
     setIsRecording(false);
     setIsProcessing(true);
     setTranscription("Processing voice...");
+    stopRecording();
 
     // Simulate a 2-second processing delay, then update with hard-coded text.
     setTimeout(() => {
-      const simulatedText =
-        "My name is Jake. I'm male. My current weight is 200 pounds, my height is 6 feet. My goal is to lose 5 pounds in one month. I have a peanut allergy.";
-      setTranscription(simulatedText);
+      // const simulatedText =
+      //   "My name is Jake. I'm male. My current weight is 200 pounds, my height is 6 feet. My goal is to lose 5 pounds in one month. I have a peanut allergy.";
+      // setTranscription(simulatedText);
       setIsProcessing(false);
       setShowSendButton(true);
     }, 2000);
   };
 
-  // When the user clicks the Send button.
-  const handleSendClick = () => {
-    setIsSending(true);
-    setTranscription("Sending...");
-    setShowSendButton(false);
-
-    // Simulate a sending delay of 1 second.
-    setTimeout(() => {
-      setIsSending(false);
-      setSuccess("Text has been sent");
-
-      setTranscription("Text has been sent"); // Updated to show the final status.
-    }, 1000);
-  };
 
   return (
     <div style={containerStyle}>
@@ -141,9 +183,9 @@ const ChatBox = () => {
           <div>Welcome to NutriVoice!</div>
         </div>
         <div style={descriptionStyle}>
-          {/* Hold the record button to share your name, goal, target time, weight,
-          and height. After recording, click 'Send,' scroll, select 'Take
-          Photo,' and point your camera at your food. */}
+          Hold the record button to share your name, goal, target time, weight,
+          and height. After recording, scroll, select 'Take
+          Photo' and point your camera at your food.
         </div>
       </div>
 
@@ -152,6 +194,7 @@ const ChatBox = () => {
         style={textAreaStyle}
         rows="4"
         value={transcription}
+        readOnly
         onChange={(e) => setTranscription(e.target.value)}
         placeholder="Your transcription will appear here..."
       />
@@ -169,21 +212,7 @@ const ChatBox = () => {
         >
           {isRecording ? "Recording..." : "Hold to Record"}
         </button>
-      </div>
-
-      {/* Send button (visible once the transcription is available) */}
-      {showSendButton && (
-        <div style={{ textAlign: "center" }}>
-          <button
-            style={sendButtonStyle}
-            onClick={handleSendClick}
-            disabled={isSending}
-          >
-            {isSending ? "Sending..." : "Send"}
-          </button>
-          {success && <div style={{ color: "green" }}>{success}</div>}
-        </div>
-      )}
+      </div>  
     </div>
   );
 };

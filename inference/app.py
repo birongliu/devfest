@@ -4,6 +4,7 @@ from inference import infer_image, generate_plan
 from database import AtlasClient
 from flask_cors import CORS
 import os
+from groq import Groq
 load_dotenv()
 
 db = AtlasClient(altas_uri=os.getenv('MOGO_URL'), dbname="devfest")
@@ -28,6 +29,65 @@ user = {
 # }
 
 
+import os
+from werkzeug.utils import secure_filename
+from pydantic import BaseModel
+
+
+@app.route('/speech-to-text', methods=['POST'])
+def speech_to_text():
+    try:
+        print("Files in request:", request.files)
+        print("Form data:", request.form)
+        
+        if 'audio' not in request.files:
+            print("No audio file in request.files")
+            return jsonify({'error': 'No audio file received'}), 400
+            
+        audio_file = request.files['audio']
+        if audio_file.filename == '':
+            return jsonify({'error': 'Empty filename'}), 400
+            
+        # Create temp directory if it doesn't exist
+        temp_dir = os.path.join(os.getcwd(), 'temp')
+        os.makedirs(temp_dir, exist_ok=True)
+        
+        # Save file temporarily
+        temp_path = os.path.join(temp_dir, secure_filename(audio_file.filename))
+        audio_file.save(temp_path)
+        print(f"Audio saved to: {temp_path}")
+        groq = Groq(api_key=os.getenv("GROQ_API_KEY"))
+        try:
+            audio = groq.audio.transcriptions.create(
+            file=(audio_file.filename, audio_file),
+                model="whisper-large-v3-turbo",
+                temperature=1,
+                response_format='json'  # Optional
+            )
+            transcription = audio  # Replace with actual processing
+            print("transcription", transcription)
+            
+            return jsonify({
+                'transcription': transcription.text,
+                'status': 'success'
+            })       
+        except Exception as e:
+            print(f"Error in speech_to_text: {str(e)}")
+            return jsonify({
+                'error': 'Failed to process audio',
+                ' details': str(e)
+            }), 500
+        finally:
+            # Remove temp file
+            # os.remove(temp_path)
+            pass
+    except Exception as e:
+        print(f"Error in speech_to_text: {str(e)}")
+        return jsonify({
+            'error': 'Failed to process audio',
+            ' details': str(e)
+        }), 500
+    
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
