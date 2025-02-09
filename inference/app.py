@@ -58,7 +58,6 @@ def speech_to_text():
         print(f"Audio saved to: {temp_path}")
         groq = Groq(api_key=os.getenv("GROQ_API_KEY"))
         try:
-            # TODO: Add your speech-to-text processing here
             audio = groq.audio.transcriptions.create(
             file=(audio_file.filename, audio_file),
                 model="whisper-large-v3-turbo",
