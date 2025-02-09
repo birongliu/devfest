@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-from inference import infer_image
+from inference import infer_image, generate_plan
 from database import AtlasClient
 from flask_cors import CORS
 import os
@@ -99,7 +99,7 @@ def predict():
     infer = infer_image(image_url=data['image'])
     print("infer", infer)
     image = get_image(food_name=infer)
-    return jsonify({'result': generate_summary(user=user, food=image) })
+    return jsonify({'result': generate_plan(user=user, food=image) })
 
 def get_image(food_name: str):
     try:
